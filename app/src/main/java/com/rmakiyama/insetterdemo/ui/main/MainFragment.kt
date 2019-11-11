@@ -1,12 +1,13 @@
 package com.rmakiyama.insetterdemo.ui.main
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.rmakiyama.insetterdemo.R
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.observe
+import com.rmakiyama.insetterdemo.databinding.MainFragmentBinding
 
 class MainFragment : Fragment() {
 
@@ -14,17 +15,26 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
+    private lateinit var binding: MainFragmentBinding
+    private val viewModel: MainViewModel by viewModels()
+    private val adapter = DemoListAdapter()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+    override fun onCreateView(
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+
+            savedInstanceState: Bundle?
+    ): View {
+        binding = MainFragmentBinding.inflate(inflater, container, false).apply {
+            list.adapter = adapter
+        }
+        return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun onViewCreated(
+            view: View,
+            savedInstanceState: Bundle?
+    ) {
+        viewModel.texts.observe(viewLifecycleOwner) { adapter.submitList(it) }
     }
-
 }
